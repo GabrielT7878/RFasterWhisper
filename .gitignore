@@ -52,6 +52,10 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
+srt_files/
+database.db
+database copy.db
+create_table.py
 
 # Translations
 *.mo
