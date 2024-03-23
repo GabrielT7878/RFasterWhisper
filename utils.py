@@ -8,14 +8,11 @@ def convert(segments,file_name):
     srt_dir = os.path.join(os.getcwd(),'srt_files')
     os.makedirs(srt_dir, exist_ok=True)
 
-    uuid_file = uuid.uuid4()
-    srtFileName = file_name.replace(".mp3",'_' + str(uuid_file) + '.srt')
+    uuid_file = str(uuid.uuid4())
+    srtFileName = file_name.replace(".mp3",'_' + uuid_file + '.srt')
     srtFileName = os.path.join(srt_dir, srtFileName)
 
-    with open(srtFileName, 'w', encoding='utf-8') as srtFile:
-        print("ok")
-
-    Finaltext = []
+    finalText = []
 
     for segment in segments:
         startTime = str(0)+str(timedelta(seconds=int(segment.start)))+',000'
@@ -24,15 +21,14 @@ def convert(segments,file_name):
         segmentId = segment.id
         line = f"{segmentId}\n{startTime} --> {endTime}\n{text[1:] if text[0] == ' ' else text}\n\n"
         segmentId = segment.id+1
-        Finaltext.append(segment.text)
-        print(line)
+        finalText.append(segment.text)
 
         with open(srtFileName, 'a', encoding='utf-8') as srtFile:
             srtFile.write(line)
 
-    saveDataBase(str(uuid_file),srtFileName)
+    saveDataBase(uuid_file,srtFileName)
 
-    return str(uuid_file), ''.join(Finaltext)
+    return uuid_file, ''.join(finalText)
 
 def saveDataBase(uuid_file,srtFileName):
     con = sqlite3.connect("database.db")
@@ -46,7 +42,5 @@ def getSrtFile(uuid):
     cur = con.cursor()
     res = cur.execute("SELECT path FROM SrtFile WHERE uuid = ?",(uuid,))
     path = res.fetchone()
-    print(uuid)
-    print(path)
     con.close()
     return path[0]
